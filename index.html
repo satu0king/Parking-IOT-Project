@@ -1,0 +1,83 @@
+<html>
+
+
+
+
+<body onload="canvas.setup()">
+
+    <canvas id="canvasArea1" style="position: absolute; left: 0; top: 0; z-index: 0; width:100%;height:100%"></canvas>
+    <canvas id="canvasArea2"
+        style="visibility: hidden; position: absolute; left: 0; top: 0; z-index: 0; width:100%;height:100%"></canvas>
+
+    <script src="./canvas.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+</body>
+
+</html>
+<script>
+
+    // Declare all global variables here
+    var data = {}
+    function setup() {
+        // Initialize variables here
+        var firebaseConfig = {
+            apiKey: "AIzaSyC_WnqnTqxY205dXCDZKmHIBFF4VySUpls",
+            authDomain: "testapp-67c7b.firebaseapp.com",
+            databaseURL: "https://testapp-67c7b.firebaseio.com",
+            projectId: "testapp-67c7b",
+            storageBucket: "testapp-67c7b.appspot.com",
+            messagingSenderId: "674530704381",
+            appId: "1:674530704381:web:580f4e00a413ede5983794"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        setInterval(() => {
+            var database = firebase.database();
+            database.ref().on("value", function (snapshot) {
+                data = snapshot.val()["ParkingSlots"];
+            }, function (error) {
+                console.log("Error: " + error.code);
+            });
+        }, 100);
+
+    }
+
+    // Declare custom functions here
+
+
+    // Function while will be called repeatedly 
+    function main() {
+
+        const width = 200;
+        const height = 80;
+
+        const offsetX = 10;
+        const offsetY = 10;
+
+        canvas.setDrawMode("fill");
+
+        canvas.clear();
+        for(slot in data) {
+            var x = data[slot].x;
+            var y = data[slot].y;
+            var available = data[slot].available;
+            console.log(slot);
+            if(available)
+            canvas.setColor("green");
+            else
+            canvas.setColor("red");
+            canvas.drawRectangle(x - width / 2 + offsetX, y - height / 2 + offsetY, width, height); 
+        }
+    }
+
+    // Override functions here; 
+    canvas.mainFunction = main;
+
+    var timeStep = 50;
+    canvas.startMain(timeStep);
+    canvas.setupFunction = setup;
+
+</script>
